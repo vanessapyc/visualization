@@ -63,27 +63,38 @@ def plotly_stacked_bar(df3):
                     'Percent poor quality reads filtered',
                     'Percent paired reads kept'],
                  color_discrete_map={
-                    'Percent human reads filtered': '#FFCCB6',
-                    'Percent poor quality reads filtered': '#CBAACB',
-                    'Percent paired reads kept': '#ABDEE6'},
+                    'Percent human reads filtered': '#FF934F',
+                    'Percent poor quality reads filtered': '#CC2D35',
+                    'Percent paired reads kept': '#058ED9'},
                  barmode='stack')
 
     fig.update_layout(
-        yaxis_title="Percent",
-        legend_title=""
+        yaxis_title='<b>Percent</b>',
+        legend_title='',
+        template='simple_white',
+        yaxis=dict(dtick=10, range=[0, 100]),
+        hoverlabel_font_color='black',
+        hoverlabel_bordercolor='white',
+        legend_font_size=13,
+        legend=dict(y=0.5, yanchor="middle")
+        # xaxis_showticklabels=False,
+        # xaxis_tickcolor='white'
         # xaxis = dict(tickmode = 'linear')
         )
 
     fig.update_traces(hovertemplate='<b>%{data.name}</b><br>' +
                                     'Sample=%{x}<br>' +
-                                    'Percent=%{y}%<extra></extra>')
+                                    'Percent=%{y}%<extra></extra>'
+                      )
+    # marker_line_color='black'
     return fig
 
 
 def create_html_table(df4):
     def table_colour(val):
-        colour = 'black'
-        return f'colour: {colour}'
+        if val:
+            colour = 'black'
+            return 'colour: %s' % colour
 
     styler = df4.style.applymap(table_colour)
 
