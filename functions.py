@@ -3,6 +3,9 @@ import matplotlib.pyplot as plt
 import argparse
 import plotly.express as px
 import jinja2
+from plotly.subplots import make_subplots
+from plotly import graph_objects as go
+import math
 
 
 def parse_args():
@@ -70,6 +73,7 @@ def plotly_stacked_bar(df3):
 
     fig.update_layout(
         yaxis_title='<b>Percent</b>',
+        xaxis_title='<b>Sample</b>',
         legend_title='',
         template='simple_white',
         yaxis=dict(dtick=10, range=[0, 100]),
@@ -107,8 +111,112 @@ def create_html_table(df4):
     return html
 
 
-def write_html_file(title, fig, html_template):
+def write_html_file(df, fig, html_template):
+    header = "<h1>QC Visualization Report</h1>"
+    body = "This is a dehosted QC report for %i samples.<br><br> Note: " \
+           "Hover over each bar to see the sample names and the exact " \
+           "percentages. <br>" \
+           "To remove a variable, click on the variable name in the " \
+           "legend. <br>" \
+           "To only show one variable, double click on the variable name " \
+           "in the legend." % len(df.index)
     with open(args.htmlfile, 'w') as f:
-        f.write(title)
+        f.write(header)
+        f.write(body)
         f.write(fig.to_html())
         f.write(html_template)
+
+
+def create_subplots(df5):
+    # define variables
+    limit = 100
+    start = 0
+    end = limit
+    row_num = 1
+    lnd = True
+    loop = True
+
+    # number of rows (one graph per row)
+    if len(df5.index) % limit < 40 and len(df5.index) > 100:
+        calc_rows = int((len(df5.index)) / limit)
+    else:
+        calc_rows = math.ceil((len(df5.index)) / limit)
+
+    fig = make_subplots(rows=calc_rows, cols=1)
+    # x_title='<b>Sample</b>', y_title='<b>Percent</b>',
+    # vertical_spacing=0.009
+
+    while loop:
+        if (row_num + 1) > calc_rows:
+            loop = False
+            end += len(df5.index) % limit
+
+        fig.add_trace(
+            go.Bar(
+                name='Percent human reads filtered',
+                x=df5[start:end]["Sample"],
+                y=df5['Percent human reads filtered'],
+                legendgroup='group1',
+                showlegend=lnd,
+                marker=dict(color="#FF934F")
+            ),
+            row=row_num,
+            col=1
+        )
+
+        fig.add_trace(
+            go.Bar(
+                name='Percent poor quality reads filtered',
+                x=df5[start:end]["Sample"],
+                y=df5['Percent poor quality reads filtered'],
+                legendgroup='group2',
+                showlegend=lnd,
+                marker=dict(color='#CC2D35')
+            ),
+            row=row_num,
+            col=1,
+        )
+
+        fig.add_trace(
+            go.Bar(
+                name='Percent paired reads kept',
+                x=df5[start:end]["Sample"],
+                y=df5['Percent paired reads kept'],
+                legendgroup='group3',
+                showlegend=lnd,
+                marker=dict(color='#058ED9')
+            ),
+            row=row_num,
+            col=1,
+        )
+        # text=df5['Sample'],
+        # textposition='auto',
+        # textfont=dict(color='black', size=15)
+
+        lnd = False
+        fig.update_layout(barmode='stack',
+                          legend_title='',
+                          template='simple_white',
+                          hoverlabel_font_color='black',
+                          hoverlabel_bordercolor='white',
+                          legend_font_size=13,
+                          height=700 * calc_rows
+                          )
+
+        fig.update_xaxes(title_text='<b>Sample</b>', row=row_num, col=1,
+                         tickmode='linear', tickfont=dict(size=10),
+                         tickangle=90)
+        # tickmode = 'linear', tickfont = dict(size=10), tickangle=90
+        # showticklabels=False, tickcolor='white'
+        fig.update_yaxes(title_text='<b>Percent</b>', row=row_num, col=1,
+                         dtick=10)
+
+        fig.update_traces(hovertemplate='<b>%{data.name}</b><br>' +
+                                        'Sample=%{x}<br>' +
+                                        'Percent=%{y}%<extra></extra>'
+                          )
+        row_num += 1
+        start += limit
+        end += limit
+
+    return fig
