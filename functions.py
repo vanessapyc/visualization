@@ -155,7 +155,7 @@ def create_subplots(df5):
             go.Bar(
                 name='Percent human reads filtered',
                 x=df5[start:end]["Sample"],
-                y=df5['Percent human reads filtered'],
+                y=df5[start:end]['Percent human reads filtered'],
                 legendgroup='group1',
                 showlegend=lnd,
                 marker=dict(color="#FF934F")
@@ -168,7 +168,7 @@ def create_subplots(df5):
             go.Bar(
                 name='Percent poor quality reads filtered',
                 x=df5[start:end]["Sample"],
-                y=df5['Percent poor quality reads filtered'],
+                y=df5[start:end]['Percent poor quality reads filtered'],
                 legendgroup='group2',
                 showlegend=lnd,
                 marker=dict(color='#CC2D35')
@@ -181,7 +181,7 @@ def create_subplots(df5):
             go.Bar(
                 name='Percent paired reads kept',
                 x=df5[start:end]["Sample"],
-                y=df5['Percent paired reads kept'],
+                y=df5[start:end]['Percent paired reads kept'],
                 legendgroup='group3',
                 showlegend=lnd,
                 marker=dict(color='#058ED9')
