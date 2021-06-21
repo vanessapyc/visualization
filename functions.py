@@ -1,7 +1,5 @@
 import pandas as pd
-import matplotlib.pyplot as plt
 import argparse
-import plotly.express as px
 import jinja2
 from plotly.subplots import make_subplots
 from plotly import graph_objects as go
@@ -14,12 +12,6 @@ def parse_args():
     parser.add_argument('--inputfile', type=str,
                         default='~/Desktop/datafile.csv',
                         help='Input file name, including directory')
-    parser.add_argument('--outputfile', type=str, default='./',
-                        help='Name the output file')
-    parser.add_argument('--figsize', type=str, default='15x8',
-                        help='Size of Pandas plot widthxheight')
-    parser.add_argument('--outputdpi', type=int, default=300,
-                        help='DPI of Pandas output file')
     parser.add_argument('--htmlfile', type=str, default='QC_data_report.html',
                         help='File name for HTML file')
     return parser.parse_args()
@@ -42,56 +34,6 @@ def read_data(df1):
     df_new["Percent paired reads kept"] = df1["paired_reads_kept"] \
         / tot_reads * 100
     return df_new
-
-
-def stacked_bar_chart(df2):
-    fig_size = args.figsize.split('x')
-    ax = df2.plot(kind="bar", x="Sample", stacked=True, figsize=(
-        float(fig_size[0]), float(fig_size[1])))
-    ax.set_ylabel("Percent")
-
-    # Move legend to the right
-    ax.legend(bbox_to_anchor=(1.0, 0.5))
-
-    plt.tight_layout()
-    plt.savefig(args.outputfile, dpi=args.outputdpi)
-    plt.show()
-    return ax
-
-
-def plotly_stacked_bar(df3):
-    fig = px.bar(df3,
-                 x='Sample',
-                 y=['Percent human reads filtered',
-                    'Percent poor quality reads filtered',
-                    'Percent paired reads kept'],
-                 color_discrete_map={
-                    'Percent human reads filtered': '#FF934F',
-                    'Percent poor quality reads filtered': '#CC2D35',
-                    'Percent paired reads kept': '#058ED9'},
-                 barmode='stack')
-
-    fig.update_layout(
-        yaxis_title='<b>Percent</b>',
-        xaxis_title='<b>Sample</b>',
-        legend_title='',
-        template='simple_white',
-        yaxis=dict(dtick=10, range=[0, 100]),
-        hoverlabel_font_color='black',
-        hoverlabel_bordercolor='white',
-        legend_font_size=13,
-        legend=dict(y=0.5, yanchor="middle")
-        # xaxis_showticklabels=False,
-        # xaxis_tickcolor='white'
-        # xaxis = dict(tickmode = 'linear')
-        )
-
-    fig.update_traces(hovertemplate='<b>%{data.name}</b><br>' +
-                                    'Sample=%{x}<br>' +
-                                    'Percent=%{y}%<extra></extra>'
-                      )
-    # marker_line_color='black'
-    return fig
 
 
 def create_html_table(df4):
@@ -129,7 +71,7 @@ def write_html_file(df, fig, html_template):
 
 def create_subplots(df5):
     # define variables
-    limit = 100
+    limit = 50
     start = 0
     end = limit
     row_num = 1
@@ -137,14 +79,12 @@ def create_subplots(df5):
     loop = True
 
     # number of rows (one graph per row)
-    if len(df5.index) % limit < 40 and len(df5.index) > 100:
+    if len(df5.index) % limit <= 25 and len(df5.index) > limit:
         calc_rows = int((len(df5.index)) / limit)
     else:
         calc_rows = math.ceil((len(df5.index)) / limit)
 
     fig = make_subplots(rows=calc_rows, cols=1)
-    # x_title='<b>Sample</b>', y_title='<b>Percent</b>',
-    # vertical_spacing=0.009
 
     while loop:
         if (row_num + 1) > calc_rows:
@@ -194,14 +134,6 @@ def create_subplots(df5):
         # textfont=dict(color='black', size=15)
 
         lnd = False
-        fig.update_layout(barmode='stack',
-                          legend_title='',
-                          template='simple_white',
-                          hoverlabel_font_color='black',
-                          hoverlabel_bordercolor='white',
-                          legend_font_size=13,
-                          height=700 * calc_rows
-                          )
 
         fig.update_xaxes(title_text='<b>Sample</b>', row=row_num, col=1,
                          tickmode='linear', tickfont=dict(size=10),
@@ -211,12 +143,24 @@ def create_subplots(df5):
         fig.update_yaxes(title_text='<b>Percent</b>', row=row_num, col=1,
                          dtick=10)
 
-        fig.update_traces(hovertemplate='<b>%{data.name}</b><br>' +
-                                        'Sample=%{x}<br>' +
-                                        'Percent=%{y}%<extra></extra>'
-                          )
         row_num += 1
         start += limit
         end += limit
+
+    fig.update_layout(barmode='stack',
+                      legend_title='',
+                      template='simple_white',
+                      hoverlabel_font_color='black',
+                      hoverlabel_bordercolor='white',
+                      legend_font_size=13,
+                      height=725 * calc_rows,
+                      legend=dict(y=1-(1/(calc_rows*2)), yanchor="bottom")
+                      )
+
+    fig.update_traces(hovertemplate='<b>%{data.name}</b><br>' +
+                                    'Sample=%{x}<br>' +
+                                    'Percent=%{y}%<extra></extra>',
+                      marker_line_color='#696462'
+                      )
 
     return fig
