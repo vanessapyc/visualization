@@ -5,37 +5,37 @@ from plotly import graph_objects as go
 import math
 
 
-def read_data(df1):
-    df_new = pd.DataFrame()
-    tot_reads = df1["human_reads_filtered"] \
-        + df1["poor_quality_reads_filtered"] \
-        + df1["paired_reads_kept"]
-
-    df_new["Sample"] = df1["sample"]
-    df_new["Percent human reads filtered"] = df1["human_reads_filtered"] \
-        / tot_reads * 100
-    df_new["Percent poor quality reads filtered"] = \
-        df1["poor_quality_reads_filtered"] / tot_reads * 100
-    df_new["Percent paired reads kept"] = df1["paired_reads_kept"] \
-        / tot_reads * 100
-    return df_new
-
-
-def create_html_table(df2):
+def create_html_table(df1):
     def table_colour(val):
         if val:
             colour = 'black'
             return 'colour: %s' % colour
 
-    styler = df2.style.applymap(table_colour)
+    styler = df1.style.applymap(table_colour)
 
     # Template handling
     env = jinja2.Environment(loader=jinja2.FileSystemLoader(searchpath=''))
-    template = env.get_template('graph_data_report.html')
+    template = env.get_template("graph_data_report.html")
 
     html = template.render(my_table=styler.render())
 
     return html
+
+
+def read_data(df2):
+    df_new = pd.DataFrame()
+    tot_reads = df2["human_reads_filtered"] \
+        + df2["poor_quality_reads_filtered"] \
+        + df2["paired_reads_kept"]
+
+    df_new["Sample"] = df2["sample"]
+    df_new["Percent human reads filtered"] = df2["human_reads_filtered"] \
+        / tot_reads * 100
+    df_new["Percent poor quality reads filtered"] = \
+        df2["poor_quality_reads_filtered"] / tot_reads * 100
+    df_new["Percent paired reads kept"] = df2["paired_reads_kept"] \
+        / tot_reads * 100
+    return df_new
 
 
 def create_subplots(df3):
@@ -63,9 +63,9 @@ def create_subplots(df3):
 
         fig.add_trace(
             go.Bar(
-                name='Percent human reads filtered',
+                name="Percent human reads filtered",
                 x=df3[start:end]["Sample"],
-                y=df3[start:end]['Percent human reads filtered'],
+                y=df3[start:end]["Percent human reads filtered"],
                 legendgroup='group1',
                 showlegend=lnd,
                 marker=dict(color="#FF934F")
@@ -76,9 +76,9 @@ def create_subplots(df3):
 
         fig.add_trace(
             go.Bar(
-                name='Percent poor quality reads filtered',
+                name="Percent poor quality reads filtered",
                 x=df3[start:end]["Sample"],
-                y=df3[start:end]['Percent poor quality reads filtered'],
+                y=df3[start:end]["Percent poor quality reads filtered"],
                 legendgroup='group2',
                 showlegend=lnd,
                 marker=dict(color='#CC2D35')
@@ -89,9 +89,9 @@ def create_subplots(df3):
 
         fig.add_trace(
             go.Bar(
-                name='Percent paired reads kept',
+                name="Percent paired reads kept",
                 x=df3[start:end]["Sample"],
-                y=df3[start:end]['Percent paired reads kept'],
+                y=df3[start:end]["Percent paired reads kept"],
                 legendgroup='group3',
                 showlegend=lnd,
                 marker=dict(color='#058ED9')
@@ -100,11 +100,11 @@ def create_subplots(df3):
             col=1,
         )
 
-        fig.update_xaxes(title_text='<b>Sample</b>', row=row_num, col=1,
+        fig.update_xaxes(title_text="<b>Sample</b>", row=row_num, col=1,
                          tickmode='linear', tickfont=dict(size=10),
                          tickangle=90)
 
-        fig.update_yaxes(title_text='<b>Percent</b>', row=row_num, col=1,
+        fig.update_yaxes(title_text="<b>Percent</b>", row=row_num, col=1,
                          dtick=10)
 
         lnd = False
@@ -120,7 +120,7 @@ def create_subplots(df3):
                       hoverlabel_bordercolor='white',
                       legend_font_size=13,
                       height=725 * calc_rows,
-                      legend=dict(y=1-(1/(calc_rows*2)), yanchor="bottom")
+                      legend=dict(y=1-(1/(calc_rows*2)), yanchor='bottom')
                       )
 
     fig.update_traces(hovertemplate='<b>%{data.name}</b><br>' +
