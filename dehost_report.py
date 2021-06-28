@@ -16,8 +16,8 @@ def parse_args():
 if __name__ == '__main__':
     args = parse_args()
     df = pd.read_csv(args.inputfile)
-    html = create_html_table(df)
-    df = read_data(df)
-    fig = create_subplots(df)
+    df2 = read_data(df)
+    html = create_html_table(df, df2)
+    fig = create_subplots(df2)
 
-    write_html_file(args, df, fig, html)
+    write_html_file(args, df2, fig, html)
