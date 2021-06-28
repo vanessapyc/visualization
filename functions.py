@@ -156,7 +156,7 @@ def write_html_file(args, df5, fig, html_template):
            "3. To only show one particular variable in each graph, double " \
            "click on the variable name in the legend. <br>" \
            "4. The \"Summary\" column in the table below displays " \
-           "\"WARNING\" if the percentage of host reads filtered" \
+           "\"WARNING\" if the percentage of host reads filtered " \
            "is over 5%%. <br> &nbsp; &nbsp; Otherwise, \"PASS\" is " \
            "displayed." % len(df5.index)
 

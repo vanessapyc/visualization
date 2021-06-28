@@ -8,7 +8,7 @@ def parse_args():
     parser.add_argument('--inputfile', type=str,
                         default='~/Desktop/datafile.csv',
                         help='Input file name, including directory')
-    parser.add_argument('--htmlfile', type=str, default='QC_data_report.html',
+    parser.add_argument('--htmlfile', type=str, default='dehost_report.html',
                         help='File name for HTML file')
     return parser.parse_args()
 
