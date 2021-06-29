@@ -11,12 +11,12 @@ def read_data(df1):
         + df1.iloc[0:len(df1.index), 2] \
         + df1.iloc[0:len(df1.index), 3]
 
-    df_new["Sample"] = df1.iloc[0:len(df1.index), 0].copy()
-    df_new["Percent host reads filtered"] = df1.iloc[0:len(df1.index), 1].\
-        copy() / tot_reads * 100
+    df_new["Sample"] = df1.iloc[0:len(df1.index), 0]
+    df_new["Percent host reads filtered"] = df1.iloc[0:len(df1.index), 1] \
+        / tot_reads * 100
     df_new["Percent poor quality reads filtered"] = \
-        df1.iloc[0:len(df1.index), 2].copy() / tot_reads * 100
-    df_new["Percent paired reads kept"] = df1.iloc[0:len(df1.index), 3].copy()\
+        df1.iloc[0:len(df1.index), 2] / tot_reads * 100
+    df_new["Percent paired reads kept"] = df1.iloc[0:len(df1.index), 3] \
         / tot_reads * 100
     return df_new
 
@@ -80,7 +80,7 @@ def create_subplots(df4):
                 name=df4.columns[2],
                 x=df4.iloc[start:end, 0],
                 y=df4.iloc[start:end, 2],
-                legendgroup='group3',
+                legendgroup='group1',
                 showlegend=lnd,
                 marker=dict(color='#FF934F')
             ),
@@ -106,7 +106,7 @@ def create_subplots(df4):
                 name=df4.columns[3],
                 x=df4.iloc[start:end, 0],
                 y=df4.iloc[start:end, 3],
-                legendgroup='group1',
+                legendgroup='group3',
                 showlegend=lnd,
                 marker=dict(color='#058ED9')
             ),
@@ -128,14 +128,12 @@ def create_subplots(df4):
     fig.update_layout(barmode='stack',
                       legend_title='',
                       template='simple_white',
-                      hoverlabel_font_color='black',
-                      hoverlabel_bordercolor='white',
-                      legend_font_size=14,
-                      height=725 * calc_rows,
-                      legend=dict(y=1-(1/(calc_rows*2)), yanchor='bottom',
-                                  traceorder='reversed'),
                       hovermode='x unified',
-                      hoverlabel=dict(bordercolor='#575452')
+                      hoverlabel_font_color='black',
+                      hoverlabel_bordercolor='#575452',
+                      height=725 * calc_rows,
+                      legend=dict(y=1-(1/(calc_rows*2)), font_size=14,
+                                  yanchor='bottom', traceorder='reversed')
                       )
 
     fig.update_traces(hovertemplate='%{data.name}: %{y}%<extra></extra>',
